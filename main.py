@@ -21,7 +21,7 @@ def bypass(url :str) -> str:
         return data[1]
     # create fireefox driver without window
     options = webdriver.FirefoxOptions()
-    #options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     driver = webdriver.Firefox(options=options)
     # driver = webdriver.Firefox()
