@@ -31,21 +31,23 @@ def bypass(url :str) -> str:
     driver.set_window_size(550, 691)
     driver.find_element(By.ID, "invisibleCaptchaShortlink").click()
     driver.execute_script("window.scrollTo(0,658)")
-    try:
-        WebDriverWait(driver, 15).until(
-            expected_conditions.visibility_of_element_located((By.LINK_TEXT, "رد تبلیغ و مشاهده لینک")))
-    except Exception as e:
-        print("Error in", url)
-        print(e)
-        driver.quit()
-        bypass(url)
-    out =  driver.find_element(By.LINK_TEXT, "رد تبلیغ و مشاهده لینک").get_attribute('href')
+    WebDriverWait(driver, 20).until(
+        expected_conditions.visibility_of_element_located((By.LINK_TEXT, "رد تبلیغ و مشاهده لینک")))
+    # try:
+    #     WebDriverWait(driver, 20).until(
+    #         expected_conditions.visibility_of_element_located((By.LINK_TEXT, "رد تبلیغ و مشاهده لینک")))
+    # except Exception as e:
+    #     print("Error in", url)
+    #     print(e)
+    #     driver.quit()
+    #     bypass(url)
+    output = driver.find_element(By.LINK_TEXT, "رد تبلیغ و مشاهده لینک").get_attribute('href')
     driver.quit()
     # insert into db.db bypass table
-    cursor.execute("INSERT INTO bypass VALUES (?, ?)", (url, out))
+    cursor.execute("INSERT INTO bypass VALUES (?, ?)", (url, output))
     db.commit()
     db.close()
-    return out
+    return output
 
 def getNumPages() -> int:
     ses = requests.session()
