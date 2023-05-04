@@ -32,10 +32,11 @@ def bypass(url :str) -> str:
     driver.find_element(By.ID, "invisibleCaptchaShortlink").click()
     driver.execute_script("window.scrollTo(0,658)")
     try:
-        WebDriverWait(driver, 12).until(
+        WebDriverWait(driver, 15).until(
             expected_conditions.visibility_of_element_located((By.LINK_TEXT, "رد تبلیغ و مشاهده لینک")))
-    except:
+    except Exception as e:
         print("Error in", url)
+        print(e)
         driver.quit()
         bypass(url)
     out =  driver.find_element(By.LINK_TEXT, "رد تبلیغ و مشاهده لینک").get_attribute('href')
