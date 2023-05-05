@@ -79,7 +79,7 @@ def pageExtractor(url :str):
         if len(lk) == 0:
             lk = getAdditionalFromTxt(url)
         for i in lk:
-            if "value" not in i:
+            if "value" not in i and "\"" not in i:
                 print("Bypassing", i)
                 url = ""
                 while not url:
