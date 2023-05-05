@@ -19,13 +19,10 @@ def bypass(url :str) -> str:
     data = cursor.fetchone()
     if data:
         return data[1]
-    # create fireefox driver without window
     options = webdriver.FirefoxOptions()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     driver = webdriver.Firefox(options=options)
-    # driver = webdriver.Firefox()
-    vars = {}
 
     driver.get(url)
     driver.set_window_size(550, 691)
@@ -33,17 +30,8 @@ def bypass(url :str) -> str:
     driver.execute_script("window.scrollTo(0,658)")
     WebDriverWait(driver, 20).until(
         expected_conditions.visibility_of_element_located((By.LINK_TEXT, "رد تبلیغ و مشاهده لینک")))
-    # try:
-    #     WebDriverWait(driver, 20).until(
-    #         expected_conditions.visibility_of_element_located((By.LINK_TEXT, "رد تبلیغ و مشاهده لینک")))
-    # except Exception as e:
-    #     print("Error in", url)
-    #     print(e)
-    #     driver.quit()
-    #     bypass(url)
     output = driver.find_element(By.LINK_TEXT, "رد تبلیغ و مشاهده لینک").get_attribute('href')
     driver.quit()
-    # insert into db.db bypass table
     cursor.execute("INSERT INTO bypass VALUES (?, ?)", (url, output))
     db.commit()
     db.close()
@@ -93,7 +81,13 @@ def pageExtractor(url :str):
         for i in lk:
             if "value" not in i:
                 print("Bypassing", i)
-                url = bypass(i)
+                url = ""
+                while not url:
+                    try:
+                        url = bypass(i)
+                    except:
+                        os.system("killall firefox-esr")
+                        pass
                 print(url)
                 f.write(url + "\n")
     print("Done", url)
@@ -119,7 +113,3 @@ out = list(dict.fromkeys(x))
 threads = []
 for i in out:
     pageExtractor(f"https://hide01.ir/downloads/{i}/")
-    #t = threading.Thread(target=pageExtractor, args=(f"https://hide01.ir/downloads/{i}/",))
-    #threads.append(t)
-    #t.start()
-    #print(f"started {i}")
