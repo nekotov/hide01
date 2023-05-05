@@ -62,6 +62,16 @@ def getPageUnits(url :str) -> [str]: # https://hide01.ir/downloads/???/
 def dwLinksExtractor(data :str) -> [str]:
     return list(dict.fromkeys([(i) for i in re.findall(r"""(https:\/\/rizy\.ir\/\S.*?)\"""", data) if not "maral" in i]))
 
+def dwLinksExtractorTXT(data :str) -> [str]:
+    return list(dict.fromkeys([(i) for i in re.findall(r"""(https:\/\/rizy\.ir\/.*?)$""", data, re.MULTILINE) if not "maral" in i]))
+
+def getAdditionalFromTxt(url :str) -> [str]:
+    ending = url.split("/")[-2]
+    sess = requests.session()
+    data = sess.get(f"https://go.linuxia.ir/link/{ending}.txt")
+    return dwLinksExtractorTXT(data.text)
+
+
 def pageExtractor(url :str):
     sess = requests.session()
     data = sess.get(url)
@@ -78,6 +88,8 @@ def pageExtractor(url :str):
     with open(dir_name + "/links.txt", "w") as f:
         lk = dwLinksExtractor(data.text)
         print(lk)
+        if len(lk) == 0:
+            lk = getAdditionalFromTxt(url)
         for i in lk:
             if "value" not in i:
                 print("Bypassing", i)
